@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1= title
+
+  p.text-success
+    strong You upload was successful!
+  p Your submission time is: 
+    strong.text-info #{time}
+  p The SHA1 hash of you submission is: 
+    strong.text-info #{digest}
+  p Please record the SHA1 in case of any disputes.
+
