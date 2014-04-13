@@ -6,12 +6,19 @@ block content
 
   form(role='form', action="/upload", method="POST", enctype="multipart/form-data")
     .form-group
-      label(for='suid') Student ID
-      input.form-control(type='textfield', id='suid', name='suid', placeholder='SUID')
+      label(for='suid') SUNetID
+      input.form-control(type='textfield', id='suid', name='suid', placeholder='SUNetID')
     .form-group
       label(for='submission') File Input
       p.help-block Please select your cabal generated tar file to upload
       input(type='file', name='submission')
+    .form-group
+      label(for='bonus') Bonus
+      p.help-block Please select if you have completed the bonus tasks
+      div.checkbox
+        label
+          input(type='checkbox', id='bonus', name='bonus')
+          | Completed Bonus?
     .form-group
       label(for='submission') Submission Comments
       p.help-block (Optional) message for teaching staff

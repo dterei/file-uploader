@@ -32,10 +32,13 @@ app.get('/', function(req, res){
 });
 
 app.post('/upload', function(req, res){
-  var suid = req.param('suid');
-  var msg = req.param('msg');
-  var file = req.files.submission;
+  var suid  = req.param('suid');
+  var bonus = req.param('bonus');
+  var msg   = req.param('msg');
+  var file  = req.files.submission;
   console.log("Starting upload for" + suid);
+
+  bonus = !bonus ? 'false' : 'true';
 
   fs.readFile(file.path, function (err, data) {
     if (!file.name || err) {
@@ -58,6 +61,7 @@ app.post('/upload', function(req, res){
       uploaded: time.getTime(),
       suid: suid,
       digest: digest,
+      bonus: bonus,
       file: file.name
     });
 
