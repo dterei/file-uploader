@@ -1,4 +1,4 @@
-# File Uploader
+# File Uploader [![Build Status](https://img.shields.io/travis/dterei/file-uploader.svg?style=flat)](https://travis-ci.org/dterei/file-uploader)
 
 A very simple website for accepting file uploads. Useful for lab
 submission from students.
@@ -6,6 +6,10 @@ submission from students.
 For safety we don't use any user input for the file name, instead
 using a SHA1 digest to name the file and writing metadata about the
 file and submission to a log.
+
+## Licensing
+
+This library is BSD-licensed.
 
 ## Get involved!
 
@@ -19,7 +23,7 @@ Master [git repository](http://github.com/dterei/file-uploader):
 
 * `git clone git://github.com/dterei/file-uploader.git`
 
-## Licensing
+## Authors
 
-This library is BSD-licensed.
+This program is written and maintained by David Terei, <code@davidterei.com>.
 

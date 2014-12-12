@@ -1,9 +1,19 @@
 {
-  "name": "application-name",
-  "version": "0.0.1",
+  "name": "file-uploader",
+  "version": "1.0.0",
+  "description": "A very simple website for accepting file uploads.",
+  "author": "David Terei <code@davidterei.com>",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "start": "node ./bin/www"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dterei/file-uploader"
+  },
+  "bugs": {
+    "url": "https://github.com/dterei/file-uploader/issues"
   },
   "dependencies": {
     "express": "~3.4.8",
