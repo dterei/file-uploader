@@ -43,8 +43,12 @@ app.post('/upload', function(req, res){
   fs.readFile(file.path, function (err, data) {
     if (!file.name || err) {
       console.log("Error with file upload: " + err);
+      var emsg = "null error";
+      if (err) {
+        emsg = err.message;
+      }
       res.render('error', {
-        message: err.message,
+        message: emsg,
         error: err
       });
       return;
