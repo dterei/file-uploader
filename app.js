@@ -1,12 +1,21 @@
-var express = require('express');
-var logger = require('morgan');
-var path = require('path');
-var fs = require('fs');
-var crypto = require('crypto')
-var winston = require('winston');
+// Simple File Uploader
+// Author: David Terei
+// License: MIT
 
-var title = 'CS240h Lab Uploader';
+/*jshint node: true */
+/*jslint unparam: true*/
 
+// Dependencies
+var express = require('express'),
+    logger = require('morgan'),
+    path = require('path'),
+    fs = require('fs'),
+    crypto = require('crypto'),
+    winston = require('winston');
+
+var title = 'CS240H Lab Uploader';
+
+// Start Express
 var app = express();
 app.configure(function () {
   app.use(express.bodyParser());
@@ -32,6 +41,7 @@ app.get('/', function(req, res){
 });
 
 app.post('/upload', function(req, res){
+  var stid  = req.params('stid');
   var suid  = req.param('suid');
   var bonus = req.param('bonus');
   var msg   = req.param('msg');
@@ -63,6 +73,7 @@ app.post('/upload', function(req, res){
     var time = new Date();
     winston.info(msg, {
       uploaded: time.getTime(),
+      stid: stid,
       suid: suid,
       digest: digest,
       bonus: bonus,

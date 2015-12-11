@@ -2,9 +2,13 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  p Welcome to #{title}.
+  p You can submit multiple times and we will simply use your last submission for grading (and late penalties).
 
   form(role='form', action="/upload", method="POST", enctype="multipart/form-data")
+    .form-group
+      label(for='stid') Student Number
+      input.form-control(type='textfield', id='stid', name='stid', placeholder='Student Number')
     .form-group
       label(for='suid') SUNetID
       input.form-control(type='textfield', id='suid', name='suid', placeholder='SUNetID')
