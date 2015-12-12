@@ -18,7 +18,9 @@ var title = 'CS240H Lab Uploader';
 // Start Express
 var app = express();
 app.configure(function () {
-  app.use(express.bodyParser());
+  app.use(express.urlencoded());
+  app.use(express.json());
+  app.use(express.multipart());
 });
 
 // View Engine Setup
@@ -41,7 +43,7 @@ app.get('/', function(req, res){
 });
 
 app.post('/upload', function(req, res){
-  var stid  = req.params('stid');
+  var stid  = req.param('stid');
   var suid  = req.param('suid');
   var bonus = req.param('bonus');
   var msg   = req.param('msg');

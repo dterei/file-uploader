@@ -1,31 +1,32 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}.
-  p You can submit multiple times and we will simply use your last submission for grading (and late penalties).
+  div(class='upload')
+    h1= title
+    p Welcome to #{title}.
+    p() You can submit multiple times and we will simply use your last submission for grading (and late penalties).
 
-  form(role='form', action="/upload", method="POST", enctype="multipart/form-data")
-    .form-group
-      label(for='stid') Student Number
-      input.form-control(type='textfield', id='stid', name='stid', placeholder='Student Number')
-    .form-group
-      label(for='suid') SUNetID
-      input.form-control(type='textfield', id='suid', name='suid', placeholder='SUNetID')
-    .form-group
-      label(for='submission') File Input
-      p.help-block Please select your cabal generated tar file to upload
-      input(type='file', name='submission')
-    .form-group
-      label(for='bonus') Bonus
-      p.help-block Please select if you have completed the bonus tasks
-      div.checkbox
-        label
-          input(type='checkbox', id='bonus', name='bonus')
-          | Completed Bonus?
-    .form-group
-      label(for='submission') Submission Comments
-      p.help-block (Optional) message for teaching staff
-      textarea.form-control(id='msg', name='msg')
-      
-    button(class='btn btn-primary', type='submit') Upload Submission
+    form(role='form', action="/upload", method="POST", enctype="multipart/form-data")
+      .form-group
+        label(for='stid') Student Number
+        input.form-control(type='textfield', id='stid', name='stid', placeholder='Student Number')
+      .form-group
+        label(for='suid') SUNetID
+        input.form-control(type='textfield', id='suid', name='suid', placeholder='SUNetID')
+      .form-group
+        label(for='submission') File Input
+        p.help-block Please select your cabal generated tar file to upload
+        input(type='file', name='submission')
+      .form-group
+        label(for='bonus') Bonus
+        p.help-block Please select if you have completed the bonus tasks
+        div.checkbox
+          label
+            input(type='checkbox', id='bonus', name='bonus')
+            | Completed Bonus?
+      .form-group
+        label(for='submission') Submission Comments
+        p.help-block (Optional) message for teaching staff
+        textarea.form-control(id='msg', name='msg')
+        
+      button(class='btn btn-primary', type='submit') Upload Submission
