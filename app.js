@@ -11,6 +11,7 @@ var express = require('express'),
     path = require('path'),
     fs = require('fs'),
     crypto = require('crypto'),
+    parted = require('parted'),
     winston = require('winston');
 
 var title = 'CS240H Lab Uploader';
@@ -20,7 +21,10 @@ var app = express();
 app.configure(function () {
   app.use(express.urlencoded());
   app.use(express.json());
-  app.use(express.multipart());
+  app.use(parted({
+   limit: 1024 * 1024,
+   diskLimit: 30 * 1024 * 1024
+  }));
 });
 
 // View Engine Setup
