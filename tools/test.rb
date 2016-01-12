@@ -10,7 +10,7 @@ GRACE = 30 * 60
 # TODO: Customize for lab
 DEADLINE = Time.local(2016,1,11,15,00)
 SUBMISSION='<SUBMISSION>'
-TESTFILE='<FILE>'
+TESTFILE='<TESTFILE>'
 
 def usage
   if ARGV.length != 2
@@ -117,6 +117,9 @@ def test_submissions(students, tarDir)
       end
     end
   end
+
+  puts "\n****************************************"
+  puts "Done! Tested #{students.length} submissions"
 end
 
 def main
