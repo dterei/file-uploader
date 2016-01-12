@@ -3,28 +3,28 @@
 require 'csv'
 require 'json'
 
-GRACE = 30 * 60
-DEADLINE = Time.local(2014,4,8,12,50)
-
-UPLOADS='submissions'
 RESDIR='results'
 TESTDIR='test'
-TESTFILE='TestGlobber.hs'
-SUBMISSION='globber-1.0.0'
+GRACE = 30 * 60
+
+# TODO: Customize for lab
+DEADLINE = Time.local(2016,1,11,15,00)
+SUBMISSION='<SUBMISSION>'
+TESTFILE='<FILE>'
 
 def usage
-  if ARGV.length != 1
+  if ARGV.length != 2
     puts <<EOL
 Read a file-uploader log file and test each (latest) submission for a student.
 
-Usage: <log file>
+Usage: <log file> <submissions directory>
 EOL
     exit 1
   end
+  return ARGV
 end
 
-def grab_students
-  logFile   = ARGV[0]
+def grab_students(logFile)
   jsonLines = File.open(logFile).read
   students  = {}
 
@@ -52,43 +52,78 @@ def late_submissions(students)
     if v[:time] > DEADLINE + GRACE
       days_late = ((v[:time] - DEADLINE) / (24*60*60)).ceil
       students[k][:late] = days_late
+    else
+      students[k][:late] = 0
     end
   end
 end
 
-def test_submission(student, data)
-  # TODO: Fill in.
+# TODO: Customize for lab
+def test_submission(student, subm)
+  if not (system "cp \"#{TESTFILE}\" test/")
+    subm[:builds] = false
+    return
+  end
+
+  if not (system "stack build 1> ../build.stdout 2> ../build.stderr")
+    subm[:builds] = false
+    return
+  end
+
+  if not (system "stack build 1>> ../build.stdout 2>> ../build.stderr")
+    subm[:builds] = false
+    return
+  end
+
+  system "stack test 1>> ../test.stdout 2>> ../test.stderr"
+  subm[:builds] = true
+  subm[:tests]  = `cat ../test.stdout | tail -1 | cut -d' ' -f1`.strip
+  subm[:failed] = `cat ../test.stdout | tail -1 | cut -d' ' -f3`.strip
 end
 
-def test_submissions(students)
+def run_submission(res_file, tarDir, student, subm)
+  puts "== Student: #{student}"
+
   root = `pwd`.strip
-  `mkdir "#{root}/#{TESTDIR}"`
-  `mkdir "#{root}/#{RESDIR}"`
+  test_dir = "#{root}/#{TESTDIR}/#{student}"
+  tar_file = File.expand_path("#{tarDir}/#{subm[:file]}")
+  `mkdir -p "#{test_dir}"`
+
+  Dir.chdir("#{test_dir}") do
+    puts "submission: #{tar_file}"
+    `tar xzf "#{tar_file}" || tar xf "#{tar_file}"`
+    Dir.chdir("#{test_dir}/#{SUBMISSION}") do
+      test_submission(student,subm)
+    end
+  end
+  res_file.puts "#{student},#{subm[:late]},#{subm[:builds]},"\
+    "#{subm[:tests]},#{subm[:failed]}"
+end
+
+def test_submissions(students, tarDir)
+  root = `pwd`.strip
+  `mkdir -p "#{root}/#{TESTDIR}"`
+  `mkdir -p "#{root}/#{RESDIR}"`
 
   File.open("#{root}/#{RESDIR}/results.csv", 'w') do |res_file|
     res_file.puts "suid,days_late,builds,tests,failed"
-
     students.each do |k,v|
-      puts "== Student: #{k}"
-
-      test_dir = "#{root}/#{TESTDIR}/#{k}"
-      `mkdir "#{test_dir}"`
-      Dir.chdir("#{test_dir}") do
-        `tar xzf "#{root}/#{UPLOADS}/#{v[:file]}"`
-        Dir.chdir("#{test_dir}/#{SUBMISSION}") do
-          test_submission(k,v)
-        end
+      begin
+        run_submission(res_file, tarDir, k, v)
+      rescue Exception => e
+        puts "\n* FAILURE: #{k} *"
+        puts e.message
+        puts ""
       end
-      res_file.puts "#{k},#{v[:late]},#{v[:builds]},#{v[:tests]},#{v[:failed]}"
     end
   end
 end
 
 def main
-  usage
-  students = grab_students
+  logFile, tarDir = usage
+  students = grab_students(logFile)
   late_submissions(students)
-  test_submissions(students)
+  test_submissions(students, tarDir)
 end
 
 main
