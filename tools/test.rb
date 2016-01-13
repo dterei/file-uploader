@@ -2,6 +2,7 @@
 
 require 'csv'
 require 'json'
+require 'timeout'
 
 RESDIR='results'
 TESTDIR='test'
@@ -58,24 +59,38 @@ def late_submissions(students)
   end
 end
 
+def timed_run(pgm, t=60)
+  pid = Process.spawn(pgm)
+  begin
+    Timeout.timeout(t) do
+      Process.wait(pid)
+      return $?.exitstatus == 0
+    end
+  rescue Timeout::Error
+    Process.kill('TERM', pid)
+    return false
+  end
+end
+
 # TODO: Customize for lab
 def test_submission(student, subm)
+  subm[:builds] = false
+  subm[:tests] = 0
+  subm[:failed] = 0
+
   if not (system "cp \"#{TESTFILE}\" test/")
-    subm[:builds] = false
     return
   end
 
-  if not (system "stack build 1> ../build.stdout 2> ../build.stderr")
-    subm[:builds] = false
+  if not (timed_run "stack build 1> ../build.stdout 2> ../build.stderr")
     return
   end
 
-  if not (system "stack build 1>> ../build.stdout 2>> ../build.stderr")
-    subm[:builds] = false
+  if not (timed_run "stack build 1>> ../build.stdout 2>> ../build.stderr")
     return
   end
 
-  system "stack test 1>> ../test.stdout 2>> ../test.stderr"
+  timed_run "stack test 1>> ../test.stdout 2>> ../test.stderr"
   subm[:builds] = true
   subm[:tests]  = `cat ../test.stdout | tail -1 | cut -d' ' -f1`.strip
   subm[:failed] = `cat ../test.stdout | tail -1 | cut -d' ' -f3`.strip
@@ -105,7 +120,7 @@ def test_submissions(students, tarDir)
   `mkdir -p "#{root}/#{TESTDIR}"`
   `mkdir -p "#{root}/#{RESDIR}"`
 
-  File.open("#{root}/#{RESDIR}/results.csv", 'w') do |res_file|
+  File.open("#{root}/#{RESDIR}/results.csv", 'a') do |res_file|
     res_file.puts "suid,days_late,builds,tests,failed"
     students.each do |k,v|
       begin
