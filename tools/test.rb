@@ -60,24 +60,23 @@ def late_submissions(students)
 end
 
 def timed_run(pgm, t=60)
-  pid = Process.spawn(pgm)
+  pid = Process.spawn(pgm, :pgroup => true)
   begin
     Timeout.timeout(t) do
       Process.wait(pid)
       return $?.exitstatus == 0
     end
   rescue Timeout::Error
-    Process.kill('TERM', pid)
+    `kill -9 -#{Process.getpgid(pid)}`
+    # XXX: Ruby doesn't seem to be able to kill a process group despite what
+    # docs say...
+    # Process.kill('-KILL', Proceess.getpgid(pid))
     return false
   end
 end
 
 # TODO: Customize for lab
 def test_submission(student, subm)
-  subm[:builds] = false
-  subm[:tests] = 0
-  subm[:failed] = 0
-
   if not (system "cp \"#{TESTFILE}\" test/")
     return
   end
@@ -97,6 +96,10 @@ def test_submission(student, subm)
 end
 
 def run_submission(res_file, tarDir, student, subm)
+  subm[:builds] = false
+  subm[:tests] = 0
+  subm[:failed] = 0
+
   puts "== Student: #{student}"
 
   root = `pwd`.strip
@@ -111,8 +114,6 @@ def run_submission(res_file, tarDir, student, subm)
       test_submission(student,subm)
     end
   end
-  res_file.puts "#{student},#{subm[:late]},#{subm[:builds]},"\
-    "#{subm[:tests]},#{subm[:failed]}"
 end
 
 def test_submissions(students, tarDir)
@@ -130,6 +131,7 @@ def test_submissions(students, tarDir)
         puts e.message
         puts ""
       end
+      res_file.puts "#{k},#{v[:late]},#{v[:builds]},#{v[:tests]},#{v[:failed]}"
     end
   end
 
