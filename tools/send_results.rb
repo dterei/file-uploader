@@ -2,24 +2,40 @@
 
 require 'csv'
 require 'mail'
-# setup_mail.rb shoud contain your mail credentials.
-load './setup_mail.rb'
 
-DOMAIN='@scs.stanford.edu'
-FROM='no-reply@scs.stanford.edu'
-SUBJ='<Email Subject>'
+# TODO: mail_credentials.rb shoud contain your SMTP setup.
+load './mail_credentials.rb'
 
-def body(build, late, tests, fails)
+DOMAIN='@domain.edu'
+FROM='@domain.edu'
+SUBJ='email subject'
+SOLN='solution url'
+
+def body(build, late, tests, fails, notes)
   # TODO: Fill in.
   body = <<EOF
-Your results are:
+Your #{SUBJ} are:
 
 * Builds: #{build}
 * Tests run: #{tests}
 * Tests passed: #{tests - fails}
 * Tests failed: #{fails}
 
-You submission was #{late}. Thanks!
+* Grade: #{tests - fails} / #{tests}
+* You submission was: #{late}
+
+* Notes: #{notes}
+
+We won't be providing individual feedback on the code sorry, instead we have a
+reference solution you can look at here:
+
+#{SOLN}
+
+This reference solution also contains the test suite that you were tested on.
+So you can see where you went wrong by checking against this testsuite.
+
+David Terei
+TA
 EOF
   return body
 end
@@ -41,7 +57,7 @@ def send_mail(to_email, body)
   Mail.deliver do
     to to_email
     from FROM
-    subject SUBJ
+    subject (SUBJ.split.map {|x| x.capitalize}).join(' ')
     body body
   end
 end
@@ -53,6 +69,7 @@ def process_results(results)
     build = row[2]
     tests = row[3].to_i
     fails = row[4].to_i
+    notes = row[5]
 
     if !late 
       late = 'on time'
@@ -62,7 +79,7 @@ def process_results(results)
       late = late + ' day late'
     end
 
-    send_mail(suid + DOMAIN, body(build, late, tests, fails))
+    send_mail(suid + DOMAIN, body(build, late, tests, fails, notes))
   end
 end
 
