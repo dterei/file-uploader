@@ -5,6 +5,9 @@
 /*jshint node: true */
 /*jslint unparam: true*/
 
+// Douglas Crockford is wrong, synchronous at startup makes sense.
+/*jslint stupid: true*/
+
 // Dependencies
 var express = require('express'),
     logger = require('morgan'),
@@ -14,7 +17,12 @@ var express = require('express'),
     parted = require('parted'),
     winston = require('winston');
 
+// Constants / Configuration
 var title = 'CS240H Lab Uploader';
+var uploadPath = path.join(__dirname, "uploads");
+var fileSizeKBLimit = 1024;
+var diskMBLimit = 30;
+var logFile = 'file-uploads.log';
 
 // Start Express
 var app = express();
@@ -22,8 +30,8 @@ app.configure(function () {
   app.use(express.urlencoded());
   app.use(express.json());
   app.use(parted({
-   limit: 1024 * 1024,
-   diskLimit: 30 * 1024 * 1024
+   limit: 1024 * fileSizeKBLimit,
+   diskLimit: 1024 * 1024 * diskMBLimit
   }));
 });
 
@@ -38,7 +46,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(app.router);
 
 // Setup log file for file uploads
-winston.add(winston.transports.File, { filename: 'file-uploads.log' });
+winston.add(winston.transports.File, { filename: logFile });
+
+// Ensure upload directory exists
+try {
+	fs.mkdirSync(uploadPath);
+} catch(e) {
+	if ( e.code !== 'EEXIST' ) {
+		 throw e;
+	}
+}
 
 // Routes
 
