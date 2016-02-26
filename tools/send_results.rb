@@ -1,15 +1,15 @@
-#! /usr/bin/env ruby
+#!/usr/bin/env ruby
 
 require 'csv'
 require 'mail'
-
 # TODO: mail_credentials.rb shoud contain your SMTP setup.
 load './mail_credentials.rb'
 
 DOMAIN='@domain.edu'
 FROM='@domain.edu'
 SUBJ='email subject'
-SOLN='solution url'
+SOLN='<SOLN UR>'
+NAME='<NAME>'
 
 def body(build, late, tests, fails, notes)
   # TODO: Fill in.
@@ -21,7 +21,7 @@ Your #{SUBJ} are:
 * Tests passed: #{tests - fails}
 * Tests failed: #{fails}
 
-* Grade: #{tests - fails} / #{tests}
+* Grade: #{tests - fails} / #{tests} (before late penalties, if any)
 * You submission was: #{late}
 
 * Notes: #{notes}
@@ -31,11 +31,11 @@ reference solution you can look at here:
 
 #{SOLN}
 
-This reference solution also contains the test suite that you were tested on.
-So you can see where you went wrong by checking against this testsuite.
+So you can see where you went wrong by checking against this testsuite. Come to
+office hours if you'd like more feedback!
 
-David Terei
-TA
+Your friendly TA,
+#{NAME}
 EOF
   return body
 end

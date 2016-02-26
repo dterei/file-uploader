@@ -1,4 +1,4 @@
-#! /usr/bin/env ruby
+#!/usr/bin/env ruby
 
 require 'csv'
 require 'json'
@@ -81,7 +81,7 @@ def test_submission(student, subm)
     return
   end
 
-  if not (timed_run "stack build 1> ../build.stdout 2> ../build.stderr")
+  if not (timed_run "stack setup 1> ../build.stdout 2> ../build.stderr")
     return
   end
 
@@ -91,8 +91,14 @@ def test_submission(student, subm)
 
   timed_run "stack test 1>> ../test.stdout 2>> ../test.stderr"
   subm[:builds] = true
+
+  # hspec output
   subm[:tests]  = `cat ../test.stdout | tail -1 | cut -d' ' -f1`.strip
   subm[:failed] = `cat ../test.stdout | tail -1 | cut -d' ' -f3`.strip
+
+  # test-framework output
+  # subm[:tests]  = `cat ../test.stdout | grep '^ Total'  | sed -re 's/\\s+/ /g' | cut -d' ' -f5`.strip
+  # subm[:failed] = `cat ../test.stdout | grep '^ Failed' | sed -re 's/\\s+/ /g' | cut -d' ' -f5`.strip
 end
 
 def run_submission(res_file, tarDir, student, subm)
