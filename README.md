@@ -1,6 +1,11 @@
 # File Uploader
 
-[![Build Status](https://img.shields.io/travis/dterei/file-uploader.svg?style=flat)](https://travis-ci.org/dterei/file-uploader)
+[![BSD3 License](http://img.shields.io/badge/license-BSD3-brightgreen.svg?style=flat)][tl;dr Legal: BSD3]
+[![Build](https://img.shields.io/travis/dterei/file-uploader.svg?style=flat)](https://travis-ci.org/dterei/file-uploader)
+
+[tl;dr Legal: BSD3]:
+  https://tldrlegal.com/license/bsd-3-clause-license-(revised)
+  "BSD3 License"
 
 A very simple website for accepting file uploads. Useful for lab submission
 from students.
